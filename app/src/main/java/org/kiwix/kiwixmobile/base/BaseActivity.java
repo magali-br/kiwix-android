@@ -22,12 +22,18 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import org.kiwix.kiwixmobile.utils.SharedPreferenceUtil;
+
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import dagger.android.AndroidInjection;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
+  @Inject
+  protected SharedPreferenceUtil sharedPreferenceUtil;
   Unbinder unbinder;
 
   @Override

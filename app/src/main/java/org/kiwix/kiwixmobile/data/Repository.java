@@ -1,9 +1,13 @@
 package org.kiwix.kiwixmobile.data;
 
 import org.kiwix.kiwixmobile.data.local.dao.BookDao;
+import org.kiwix.kiwixmobile.data.local.dao.HistoryDao;
+import org.kiwix.kiwixmobile.data.local.entity.History;
 import org.kiwix.kiwixmobile.library.entity.LibraryNetworkEntity;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -22,14 +26,17 @@ import io.reactivex.Single;
 public class Repository implements DataSource {
 
   private BookDao bookDao;
+  private HistoryDao historyDao;
   private Scheduler io;
   private Scheduler mainThread;
 
   @Inject
-  Repository(@IO Scheduler io, @MainThread Scheduler mainThread, BookDao bookDao) {
+  Repository(@IO Scheduler io, @MainThread Scheduler mainThread, BookDao bookDao,
+             HistoryDao historyDao) {
     this.io = io;
     this.mainThread = mainThread;
     this.bookDao = bookDao;
+    this.historyDao = historyDao;
   }
 
   @Override
@@ -62,5 +69,39 @@ public class Repository implements DataSource {
   @Override
   public void saveBooks(List<LibraryNetworkEntity.Book> books) {
     bookDao.saveBooks((ArrayList<LibraryNetworkEntity.Book>) books);
+  }
+
+  @Override
+  public Single<List<History>> getDateCategorizedHistory(boolean showHistoryCurrentBook) {
+    return Single.just(historyDao.getHistoryList(showHistoryCurrentBook))
+        .map(histories -> {
+          History history = null;
+          if (histories.size() >= 1) {
+            history = histories.get(0);
+            histories.add(0, null);
+          }
+          for (int position = 2; position < histories.size(); position++) {
+            if (history != null && histories.get(position) != null) {
+
+              Calendar calendar1 = Calendar.getInstance();
+              calendar1.setTime(new Date(history.getTimeStamp()));
+
+              Calendar calendar2 = Calendar.getInstance();
+              calendar2.setTime(new Date(histories.get(position).getTimeStamp()));
+
+              if (calendar1.get(Calendar.YEAR) != calendar2.get(Calendar.YEAR) ||
+                  calendar1.get(Calendar.DAY_OF_YEAR) != calendar2.get(Calendar.DAY_OF_YEAR)) {
+                histories.add(position, null);
+              }
+            }
+            history = histories.get(position);
+          }
+          return histories;
+        });
+  }
+
+  @Override
+  public void saveHistory(String file, String favicon, String url, String title, long timeStamp) {
+    historyDao.saveHistory(file, favicon, url, title, timeStamp);
   }
 }

@@ -3,6 +3,8 @@ package org.kiwix.kiwixmobile.di.modules;
 import org.kiwix.kiwixmobile.bookmark.BookmarksActivity;
 import org.kiwix.kiwixmobile.di.PerActivity;
 import org.kiwix.kiwixmobile.error.ErrorActivity;
+import org.kiwix.kiwixmobile.history.HistoryActivity;
+import org.kiwix.kiwixmobile.history.HistoryModule;
 import org.kiwix.kiwixmobile.intro.IntroActivity;
 import org.kiwix.kiwixmobile.main.MainActivity;
 import org.kiwix.kiwixmobile.main.MainModule;
@@ -53,4 +55,8 @@ public abstract class ActivityBindingModule {
   @PerActivity
   @ContributesAndroidInjector
   public abstract SplashActivity provideSplashActivity();
+
+  @PerActivity
+  @ContributesAndroidInjector(modules = HistoryModule.class)
+  public abstract HistoryActivity provideHistoryActivity();
 }

@@ -201,4 +201,7 @@
   <string name="go_to_previous_page">Go to previous page</string>
   <string name="go_to_next_page">Go to next page</string>
   <string name="table_of_contents">Table of contents</string>
+  <string name="history">History</string>
+  <string name="history_from_current_book">History from current book</string>
+  <string name="search_history">Search history</string>
 </resources>
